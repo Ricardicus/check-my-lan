@@ -129,16 +129,19 @@ perform_check() {
 
 	# Comparing the old and the new arp-entries to see if anything has happened
 	info_written=0
-	all_incomplete=1 # To remove some noise..
+	# To remove some noise, only entries that contain at least one line which 
+	# is not of the sort "<incomplete>" will be noted 
+	all_incomplete=1 
+
 	while read line; do
 
 		if ! echo "$this_time_connected" |grep "$line" >/dev/null; then
 			echo "- old entry no longer in arp: $line" >>$info_file
 			info_written=1
-		fi
-
-		if ! echo "$line" |grep "<incomplete>" >/dev/null; then
-			all_incomplete=0
+	
+			if ! echo "$line" |grep "<incomplete>" >/dev/null; then
+				all_incomplete=0
+			fi
 		fi
 
 	done <<< "$last_time_connected"
@@ -148,10 +151,11 @@ perform_check() {
 		if ! echo "$last_time_connected" |grep "$line" >/dev/null; then
 			echo "- new entry in arp: $line" >> $info_file
 			info_written=1
-		fi
 
-		if ! echo "$line" |grep "<incomplete>" >/dev/null; then
-			all_incomplete=0
+			if ! echo "$line" |grep "<incomplete>" >/dev/null; then
+				all_incomplete=0
+			fi
+
 		fi
 		
 	done <<< "$this_time_connected"
