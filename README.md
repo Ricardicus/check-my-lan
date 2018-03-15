@@ -10,3 +10,9 @@ Make sure that your email server accepts these --insecure mails in that case!
 <pre>
 curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd --mail-from "$RECEIVER_MAIL" --mail-rcpt "$RECEIVER_MAIL" --upload-file file.txt --user "$SENDER_MAIL:$PASSWORD" --insecure 
   </pre>
+
+# availability
+The program is written for my mac and my raspberry Pi. 
+I run a shell called oh-my-zsh: https://github.com/robbyrussell/oh-my-zsh
+and the raspberry Pi is running Rasbian. So if you want it to run an another device 
+then let me know and I will try to port it. :)
