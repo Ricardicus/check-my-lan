@@ -13,11 +13,11 @@ set_up () {
 	echo "Want to get email notifications? (y/n)"
 	read answer
 	if [ "$answer" == "y" ]; then
-		echo "Enter mail address:"
+		echo "Enter sender mail address:"
 		read mail_address
-		echo "Enter mail password:"
+		echo "Enter sender mail password:"
 		read -s mail_password
-		echo "What is you name?"
+		echo "What is your name?"
 		read sender_name
 		echo "Ok $sender_name! I will need some final info about the receiver also!"
 		echo "Enter receiver address:"
@@ -121,10 +121,6 @@ perform_check() {
 		echo "$line" |awk '{ if ($1 != "?"){printf $1;printf " "; printf $2; printf " "; printf $4; printf "\n"} }' >> $connected_file
 	done <<<"$connected"
 
-	# Print connected devices
-	echo "======= CONNECTED TO THE NETWORK: ======="
-	cat $connected_file
-
 	this_time_connected=$(cat $connected_file)
 
 	if [ -f $info_file ]; then
@@ -156,6 +152,9 @@ perform_check() {
 	fi
 
 	if [ -f $info_file ]; then
+       		echo "======= CONNECTED TO THE NETWORK: ======="
+        	cat $connected_file
+
 		# Something on the LAN has changed..
 		cat $info_file
 
