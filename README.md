@@ -4,6 +4,12 @@ A script for my raspberry PI that lets me know who is using my WiFi.
 It uses ping and arp to see if new devices pop up after a series of pings 
 have been carried out. Super simple. 
 
+# start it
+<pre>
+chmod u+x check.sh
+./check.sh
+</pre>
+
 # email notifications
 If you want it can send you the changes in the arp using cURL. 
 Make sure that your email server accepts these --insecure mails in that case!
