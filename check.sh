@@ -53,17 +53,12 @@ send_mail() {
 	NICE_NAME=$6
 	SENDER_MAIL=$7
 
-	cd etc/mail
-
 	if [ "$#" -ne 7 ]; then
 		echo "usage: receiver_name receiver_mail subject password filename nicename sendermail"
 		exit 0
 	fi
 
-	echo "From: '$NICE_NAME' <$SENDER_MAIL>
-	To: '$RECEIVER_NAME' <$RECEIVER_MAIL>
-	Subject: $SUBJECT_LINE
-	" > mailheaders_$RECEIVER_MAIL.txt
+	printf "From: '$NICE_NAME' <$SENDER_MAIL>\r\nTo: '$RECEIVER_NAME' <$RECEIVER_MAIL>\r\nSubject: $SUBJECT_LINE\r\n\r\n" > mailheaders_$RECEIVER_MAIL.txt
 
 	cat mailheaders_$RECEIVER_MAIL.txt $FILE_NAME > fil.txt
 
@@ -166,7 +161,7 @@ perform_check() {
 
 		if [ ! $send_mail_function -eq 0 ]; then
 			send_mail "$receiver_name" "$receiver_mail" "Network Change" "$mail_password" "$info_file" "$sender_name" "$mail_address"
-			if [ $? -neq 0 ]; then
+			if [ ! $? -eq 0 ]; then
 				echo "failed to send mail.."
 			fi
 		fi 
