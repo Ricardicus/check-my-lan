@@ -29,7 +29,7 @@ set_up () {
 		send_mail_function=1
 	fi
 
-	network_info=$(ifconfig | grep "inet " |awk '{ if ( $2 != "127.0.0.1" ) { printf $2; printf " "; print $4} }')
+	network_info=($(ifconfig | grep "inet " |awk '{ if ( $2 != "127.0.0.1" ) { printf $2; printf " "; print $4} }'))
 
 	if [ ! -f "ipv4_locals" ]; then
 
@@ -40,7 +40,7 @@ set_up () {
 		fi
 
 	fi
-	local_ips=$(./ipv4_locals $network_info) # A string containing ips of the local network
+	local_ips=$(./ipv4_locals ${network_info[0]} ${network_info[1]}) # A string containing ips of the local network
 }
 
 send_mail() {

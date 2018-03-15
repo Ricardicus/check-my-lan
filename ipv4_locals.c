@@ -24,8 +24,12 @@ void print_ips(const char *ip, const char *netmask)
 	int dot_count = 0; // For format checking
 	char buffer[200], *c, *d;
 
-	snprintf(buffer, sizeof buffer, "%s", ip);
-
+	c = strstr(ip, "addr:");
+	if ( c != NULL ) {
+		snprintf(buffer, sizeof buffer, "%s", c+strlen("addr:"));
+	} else {
+		snprintf(buffer, sizeof buffer, "%s", ip);
+	}
 	// Will perform some sanity checks. There should only be 
 	// digits and dots in the string. There should also be 3 dots. 
 
@@ -52,8 +56,10 @@ void print_ips(const char *ip, const char *netmask)
 		d = strchr(c, '.');
 		if ( d != NULL )
 			*d = '\0';
+
 		tmp = (uint32_t) atoi(c);
 		ipn = (ipn<<8) + tmp;
+
 		c = ( d == NULL ? d : d+1 ); 
 	}
 
@@ -62,26 +68,67 @@ void print_ips(const char *ip, const char *netmask)
 	// Parsing the netmask
 
 	memset(buffer, '\0', sizeof buffer);
-	snprintf(buffer, sizeof buffer, "%s", netmask);
+	c = strstr(netmask, "Mask:");
+	if (c != NULL ) {
+		snprintf(buffer, sizeof buffer, "%s", c + strlen("Mask:"));
+        	
+		int alert=0;
 
-	if ( buffer[0] != '0' ||buffer[1] != 'x' )
-		longjmp(jb, ERROR_GIVEN_NETMASK);
+		c = buffer;
+		while ( *c )  {
+			if ( !isdigit(*c) && *c != '.')
+				alert=1;
+			c++;
+		}
 
-	if ( strlen(buffer) != 10 )
-		longjmp(jb, ERROR_GIVEN_NETMASK);
+		if ( alert )
+        	        longjmp(jb, ERROR_GIVEN_NETMASK);
+	
+		c = buffer;
 
-	c = &buffer[2];
+	} else {
+		snprintf(buffer, sizeof buffer, "%s", netmask);
+
+        	if ( buffer[0] != '0' ||buffer[1] != 'x' )
+ 	               longjmp(jb, ERROR_GIVEN_NETMASK);
+
+        	if ( strlen(buffer) != 10 )
+                	longjmp(jb, ERROR_GIVEN_NETMASK);
+	
+		c = &buffer[2];
+	}
+
+
 	while ( *c ) {
 		// ASCII to int conversion.. stored in tmp
-		if ( *c >= 'a' && *c <= 'f' ) 
+		if ( *c >= 'a' && *c <= 'f' ){
 			tmp = *c - 97 + 10;
-		else 
-			tmp = *c - 48;
-		netm = (netm<<4) + tmp; 
+	                netm = (netm<<4) + tmp;
+		} else if ( isdigit(*c) ) {
+			d = strchr(c,'.');
+			if ( d != NULL )
+				*d = '\0';
+
+			tmp = (uint32_t) atoi(c);
+			netm = (netm<<8) + tmp;
+			c = c + strlen(c);
+                        if ( d != NULL )
+                                *d = '.';
+		}
 		++c;
 	}
 
 	// Now the netmask is represented in the variable 'netm'!
+        /* 
+	// Debugging 
+	memset(buffer, '\0', sizeof buffer);
+        int_ip_to_string_ip(buffer, sizeof buffer, ipn);
+        printf("ip: %s\n", buffer);
+	memset(buffer, '\0', sizeof buffer);
+	int_ip_to_string_ip(buffer, sizeof buffer, netm);
+	printf("netmask: %s\n", buffer);
+
+	exit(0); */
 
 	// ========== PRINTING THE IPv4 addresses of the local network! ===========
 	memset(buffer, '\0', sizeof buffer);
@@ -117,7 +164,7 @@ int main(int argc, char *argv[])
 		return -1;
 		break;
 	case ERROR_GIVEN_NETMASK:
-		fprintf(stderr, "The given netmask '%s' was not valid. Should be on the form 0xXXXXXXXX .\n", argv[2]);
+		fprintf(stderr, "The given netmask '%s' was not valid. Should be on the form 0xXXXXXXXX or Mask:digits.digits.digits.digits .\n", argv[2]);
 		return -1;
 		break;		
 	default:
