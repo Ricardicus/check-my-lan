@@ -129,11 +129,16 @@ perform_check() {
 
 	# Comparing the old and the new arp-entries to see if anything has happened
 	info_written=0
+	all_incomplete=1 # To remove some noise..
 	while read line; do
 
 		if ! echo "$this_time_connected" |grep "$line" >/dev/null; then
 			echo "- old entry no longer in arp: $line" >>$info_file
 			info_written=1
+		fi
+
+		if ! echo "$line" |grep "<incomplete>" >/dev/null; then
+			all_incomplete=0
 		fi
 
 	done <<< "$last_time_connected"
@@ -145,13 +150,17 @@ perform_check() {
 			info_written=1
 		fi
 
+		if ! echo "$line" |grep "<incomplete>" >/dev/null; then
+			all_incomplete=0
+		fi
+		
 	done <<< "$this_time_connected"
 
 	if [ $info_written -eq 0 ]; then
 		echo "No change detected."
 	fi
 
-	if [ -f $info_file ]; then
+	if [ -f $info_file ] && [ $all_incomplete -eq 0 ]; then
        		echo "======= CONNECTED TO THE NETWORK: ======="
         	cat $connected_file
 
