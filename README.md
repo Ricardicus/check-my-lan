@@ -14,5 +14,5 @@ curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd --mail-from "$RECEIVER_MAIL" 
 # availability
 The program is written for my mac and my raspberry Pi. 
 I run a shell called oh-my-zsh: https://github.com/robbyrussell/oh-my-zsh
-and the raspberry Pi is running Rasbian. So if it is not working then let me know and
-I will try to port it. 
+and the raspberry Pi is running Rasbian. So if you want it to run an another device 
+then let me know and I will try to port it. :)
