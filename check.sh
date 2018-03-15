@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 local_ips=""
 
@@ -8,7 +8,7 @@ send_mail_function=0
 # Checks timeout in minutes, sleep time in minutes
 checks_timeout_minutes=1
 
-function set_up {
+set_up () {
 	echo "===== LAN CHECKER SET UP ====="
 	echo "Want to get email notifications? (y/n)"
 	read answer
@@ -43,7 +43,7 @@ function set_up {
 	local_ips=$(./ipv4_locals $network_info) # A string containing ips of the local network
 }
 
-function send_mail {
+send_mail() {
 	
 	RECEIVER_NAME=$1
 	RECEIVER_MAIL=$2
@@ -74,8 +74,7 @@ function send_mail {
 
 }
 
-
-function perform_pinging {
+perform_pinging () {
 	echo "Pinging everyone..."
 	# The shell will spawn ping processes, these need no the exceed a certain
 	# ammount or else the memory will not be sufficient
@@ -96,7 +95,7 @@ function perform_pinging {
 			killall ping &>/dev/null
 			launch_count=0
 		fi
-	done <<< "$local_ips"
+	done <<<"$local_ips"
 
 	sleep 10
 	killall ping &>/dev/null
@@ -108,7 +107,7 @@ function perform_pinging {
 	echo "done pinging"
 }
 
-function perform_check {
+perform_check() {
 	connected_file="connected_locally.txt"
 	info_file="arp_info.txt"
 
